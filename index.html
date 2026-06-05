@@ -249,6 +249,178 @@
             flex-shrink: 0;
         }
 
+        /* ════════ SISTEMA DE PERFILES MÚLTIPLES ════════ */
+        /* Overlay de selección inicial */
+        .profile-selector-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, rgba(7,9,26,0.96), rgba(13,17,42,0.96));
+            backdrop-filter: blur(16px);
+            z-index: 99999;
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 32px;
+        }
+        .profile-selector-overlay.active { display: flex; }
+        .ps-modal {
+            max-width: 540px; width: 100%;
+            background: linear-gradient(135deg, rgba(30,42,90,0.65), rgba(18,24,56,0.65));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(96,200,255,0.3);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+            animation: psPop .35s cubic-bezier(.4,0,.2,1);
+        }
+        @keyframes psPop { from{opacity:0;transform:scale(.92);} to{opacity:1;transform:scale(1);} }
+        .ps-title {
+            font-size: 24px; font-weight: 800;
+            background: linear-gradient(90deg, #4dd0ff, #a855f7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 6px; text-align: center;
+        }
+        .ps-subtitle {
+            font-size: 13px; color: var(--text-muted);
+            text-align: center; margin-bottom: 26px;
+        }
+        .ps-profiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .ps-profile-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 22px 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all .2s;
+            position: relative;
+        }
+        .ps-profile-card:hover {
+            background: rgba(77,208,255,0.10);
+            border-color: rgba(77,208,255,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+        }
+        .ps-profile-card .pp-avatar {
+            font-size: 38px;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        .ps-profile-card .pp-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .ps-create-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px dashed rgba(255,255,255,0.18);
+            border-radius: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all .15s;
+            font-family: inherit;
+        }
+        .ps-create-btn:hover {
+            background: rgba(77,208,255,0.10);
+            border-color: rgba(77,208,255,0.5);
+            color: #4dd0ff;
+        }
+        .ps-emoji-option {
+            width: 38px; height: 38px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.25);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .15s;
+        }
+        .ps-emoji-option:hover { background: rgba(77,208,255,0.20); }
+        .ps-emoji-option.selected {
+            background: rgba(77,208,255,0.30);
+            border-color: rgba(77,208,255,0.6);
+            transform: scale(1.1);
+        }
+
+        /* Profile chip en el sidebar */
+        .profile-chip {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, rgba(77,208,255,0.10), rgba(168,85,247,0.08));
+            border: 1px solid rgba(96,200,255,0.20);
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: all .15s;
+            user-select: none;
+        }
+        .profile-chip:hover {
+            background: linear-gradient(135deg, rgba(77,208,255,0.18), rgba(168,85,247,0.14));
+            border-color: rgba(96,200,255,0.4);
+        }
+        .pc-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #4dd0ff, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .pc-info { flex: 1; min-width: 0; }
+        .pc-name {
+            font-size: 13px; font-weight: 700; color: var(--text-primary);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .pc-action { font-size: 10px; color: var(--text-muted); }
+        .pc-arrow { font-size: 11px; color: var(--text-muted); transition: transform .2s; }
+        .profile-chip.open .pc-arrow { transform: rotate(180deg); }
+
+        /* Dropdown del sidebar */
+        .profile-dropdown {
+            display: none;
+            background: rgba(20,26,56,0.65);
+            border: 1px solid rgba(96,200,255,0.20);
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 14px;
+        }
+        .profile-dropdown.open { display: block; }
+        .pd-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+        .pd-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .pd-item:hover { background: rgba(77,208,255,0.10); }
+        .pd-item.active { background: rgba(77,208,255,0.18); }
+        .pd-item .pd-emoji {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, #4dd0ff, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0;
+        }
+        .pd-item .pd-name { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+        .pd-item .pd-check { font-size: 12px; color: #4dd0ff; }
+        .pd-actions { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .pd-btn-create {
+            width: 100%; padding: 8px;
+            background: transparent;
+            border: 1px dashed rgba(255,255,255,0.18);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer; font-size: 11.5px; font-weight: 600;
+            font-family: inherit;
+            transition: all .15s;
+        }
+        .pd-btn-create:hover { background: rgba(77,208,255,0.10); color: #4dd0ff; border-color: rgba(77,208,255,0.4); }
+
         /* ════════ BOTÓN X DE ELIMINAR EN CARDS (hover) ════════ */
         .card-delete-x {
             position: absolute;
@@ -3988,8 +4160,53 @@
         <!-- Sidebar Hover Trigger -->
         <div id="sidebarTrigger" class="sidebar-trigger"></div>
 
+        <!-- ═════════ PROFILE SELECTOR OVERLAY (al iniciar sin perfil) ═════════ -->
+        <div class="profile-selector-overlay" id="profileSelectorOverlay">
+            <div class="ps-modal">
+                <div class="ps-header">
+                    <div class="ps-title">¿Quién está usando la app?</div>
+                    <div class="ps-subtitle">Elegí tu perfil para mantener tus datos separados</div>
+                </div>
+                <div class="ps-profiles" id="psProfilesList"></div>
+                <div class="ps-create">
+                    <button class="ps-create-btn" onclick="window.ProfileUI.showCreateForm()">
+                        <span style="font-size:24px;">➕</span>
+                        <span>Crear nuevo perfil</span>
+                    </button>
+                </div>
+                <div id="psCreateForm" style="display:none;margin-top:18px;padding:18px;background:rgba(255,255,255,0.04);border-radius:14px;">
+                    <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-primary);">Nuevo perfil</div>
+                    <input type="text" id="psNewName" placeholder="Tu nombre (ej: Santi, Cami...)"
+                        style="width:100%;padding:11px 14px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text-primary);font-family:inherit;font-size:14px;outline:none;margin-bottom:10px;">
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Emoji</div>
+                    <div id="psEmojiPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;">
+                        <button onclick="window.ProfileUI.hideCreateForm()" style="padding:8px 16px;background:rgba(255,255,255,0.06);border:none;border-radius:8px;color:var(--text-secondary);cursor:pointer;font-size:13px;">Cancelar</button>
+                        <button onclick="window.ProfileUI.createProfile()" style="padding:8px 18px;background:linear-gradient(135deg,#4dd0ff,#a855f7);border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:700;">Crear y entrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
+            <!-- Profile chip switcher -->
+            <div class="profile-chip" id="profileChip" onclick="window.ProfileUI.toggleSwitcher()" title="Cambiar de usuario">
+                <div class="pc-avatar" id="pcAvatar">👤</div>
+                <div class="pc-info">
+                    <div class="pc-name" id="pcName">Usuario</div>
+                    <div class="pc-action">Click para cambiar</div>
+                </div>
+                <div class="pc-arrow">▾</div>
+            </div>
+            <!-- Dropdown del switcher -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="pd-list" id="pdList"></div>
+                <div class="pd-actions">
+                    <button onclick="window.ProfileUI.openSelectorFresh()" class="pd-btn-create">➕ Crear nuevo perfil</button>
+                </div>
+            </div>
+
             <div class="sidebar-logo">Agenda Personal</div>
             
             <nav class="sidebar-nav">
@@ -4926,12 +5143,68 @@
         // ===== SUPABASE CONFIG =====
         const SUPABASE_URL = 'https://hdlsrcqjpdmidrkwufxe.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkbHNyY3FqcGRtaWRya3d1ZnhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzgzNjIsImV4cCI6MjA5Mzg1NDM2Mn0.xwWVXVAvBVnyPsmBEHDH62StSCFs_EScK-veJLL-IwA';
-        const USER_KEY = 'santi-agenda-2026';
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ===== SISTEMA DE PERFILES MÚLTIPLES =====
+        const PROFILES_STORAGE_KEY = 'agenda_profiles_v1';
+        const CURRENT_PROFILE_KEY  = 'agenda_current_profile_v1';
+        const LEGACY_USER_KEY      = 'santi-agenda-2026'; // para migración
+
+        window.Profiles = {
+            getAll() {
+                try { return JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY) || '[]'); }
+                catch(e) { return []; }
+            },
+            saveAll(profiles) {
+                localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(profiles));
+            },
+            getCurrent() {
+                const id = localStorage.getItem(CURRENT_PROFILE_KEY);
+                if (!id) return null;
+                return this.getAll().find(p => p.id === id) || null;
+            },
+            setCurrent(id) {
+                localStorage.setItem(CURRENT_PROFILE_KEY, id);
+            },
+            create({ name, emoji = '👤', color = '#4dd0ff' }) {
+                const profiles = this.getAll();
+                const id = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+                profiles.push({ id, name, emoji, color, createdAt: new Date().toISOString() });
+                this.saveAll(profiles);
+                return id;
+            },
+            update(id, changes) {
+                const profiles = this.getAll();
+                const p = profiles.find(x => x.id === id);
+                if (p) Object.assign(p, changes);
+                this.saveAll(profiles);
+            },
+            delete(id) {
+                const profiles = this.getAll().filter(p => p.id !== id);
+                this.saveAll(profiles);
+                if (localStorage.getItem(CURRENT_PROFILE_KEY) === id) {
+                    localStorage.removeItem(CURRENT_PROFILE_KEY);
+                }
+            },
+            // Clave Supabase única por perfil
+            currentUserKey() {
+                const p = this.getCurrent();
+                return p ? `profile-${p.id}` : LEGACY_USER_KEY;
+            }
+        };
+
+        // USER_KEY ahora es dinámico — getter que devuelve el del perfil activo
+        Object.defineProperty(window, 'USER_KEY', {
+            get() { return window.Profiles.currentUserKey(); }
+        });
 
         // ===== DATA STORE =====
         const Store = {
-            key: 'commandCenter_v1',
+            // key dinámico por perfil — cada usuario tiene su propio localStorage
+            get key() {
+                const p = window.Profiles?.getCurrent();
+                return p ? `commandCenter_${p.id}` : 'commandCenter_v1';
+            },
             
             defaultData: {
                 meta: {
@@ -9689,6 +9962,11 @@
         // (ensures external scripts like Lucide/Chart.js are fully ready).
         async function __bootApp() {
             if (window.__appBooted) return;
+            // Bloquear el init si no hay perfil seleccionado (el overlay se encarga)
+            if (!window.Profiles?.getCurrent()) {
+                console.log('[Profiles] No hay perfil seleccionado. Esperando selección...');
+                return;
+            }
             window.__appBooted = true;
             await App.init();
         }
@@ -11608,6 +11886,157 @@
             setTimeout(() => clearInterval(waitForApp), 15000); // Safety
             // Setup drag ya mismo si el elemento existe (no espera al data)
             setupDrag();
+        })();
+
+        /* ═══════════════ UI DE PERFILES (selector + switcher) ═══════════════ */
+        window.ProfileUI = (function() {
+            const EMOJIS = ['👤','🧑','👩','👨','🧒','👶','🦊','🐱','🐶','🐼','🦁','🐯','🐸','🦄','🐙','🦋','🌸','🌟','⚡','🔥','💎','🎨','🚀','🎯','🧠','💡','📚','🎵','🍎','🌈'];
+            let pendingEmoji = '👤';
+
+            function renderSelector() {
+                const profiles = window.Profiles.getAll();
+                const list = document.getElementById('psProfilesList');
+                if (!list) return;
+                if (profiles.length === 0) {
+                    list.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">
+                        👋 Bienvenido. Creá tu primer perfil para empezar.
+                    </div>`;
+                } else {
+                    list.innerHTML = profiles.map(p => `
+                        <div class="ps-profile-card" onclick="window.ProfileUI.selectProfile('${p.id}')">
+                            <div class="pp-avatar">${p.emoji || '👤'}</div>
+                            <div class="pp-name">${p.name}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            function renderEmojiPicker() {
+                const picker = document.getElementById('psEmojiPicker');
+                if (!picker) return;
+                picker.innerHTML = EMOJIS.map(e => `
+                    <button type="button" class="ps-emoji-option ${e === pendingEmoji ? 'selected' : ''}"
+                        onclick="window.ProfileUI.pickEmoji('${e}')">${e}</button>
+                `).join('');
+            }
+
+            // Render del chip + dropdown del sidebar
+            function renderSidebarChip() {
+                const current = window.Profiles.getCurrent();
+                const chip = document.getElementById('profileChip');
+                const avatar = document.getElementById('pcAvatar');
+                const name = document.getElementById('pcName');
+                if (!chip || !avatar || !name) return;
+                if (!current) {
+                    chip.style.display = 'none';
+                    return;
+                }
+                chip.style.display = 'flex';
+                avatar.textContent = current.emoji || '👤';
+                name.textContent = current.name;
+            }
+
+            function renderDropdownList() {
+                const list = document.getElementById('pdList');
+                if (!list) return;
+                const all = window.Profiles.getAll();
+                const cur = window.Profiles.getCurrent();
+                list.innerHTML = all.map(p => `
+                    <div class="pd-item ${cur && cur.id === p.id ? 'active' : ''}" onclick="window.ProfileUI.switchTo('${p.id}')">
+                        <div class="pd-emoji">${p.emoji || '👤'}</div>
+                        <div class="pd-name">${p.name}</div>
+                        ${cur && cur.id === p.id ? '<div class="pd-check">✓</div>' : ''}
+                    </div>
+                `).join('');
+            }
+
+            // ───── API pública ─────
+            return {
+                init() {
+                    // Detectar si hay perfil activo
+                    const current = window.Profiles.getCurrent();
+                    if (!current) {
+                        // Sin perfil: mostrar selector
+                        this.openSelector();
+                    } else {
+                        renderSidebarChip();
+                        renderDropdownList();
+                    }
+                },
+                openSelector() {
+                    pendingEmoji = '👤';
+                    document.getElementById('profileSelectorOverlay').classList.add('active');
+                    document.getElementById('psCreateForm').style.display = 'none';
+                    renderSelector();
+                },
+                openSelectorFresh() {
+                    // Cuando ya hay perfil activo y quieren crear/cambiar
+                    this.openSelector();
+                    document.getElementById('profileDropdown').classList.remove('open');
+                    document.getElementById('profileChip')?.classList.remove('open');
+                },
+                closeSelector() {
+                    document.getElementById('profileSelectorOverlay').classList.remove('active');
+                },
+                selectProfile(id) {
+                    window.Profiles.setCurrent(id);
+                    this.closeSelector();
+                    location.reload(); // Recargar para que App.init() levante los datos del nuevo perfil
+                },
+                switchTo(id) {
+                    const cur = window.Profiles.getCurrent();
+                    if (cur && cur.id === id) {
+                        document.getElementById('profileDropdown').classList.remove('open');
+                        document.getElementById('profileChip')?.classList.remove('open');
+                        return;
+                    }
+                    window.Profiles.setCurrent(id);
+                    location.reload();
+                },
+                toggleSwitcher() {
+                    const dd = document.getElementById('profileDropdown');
+                    const chip = document.getElementById('profileChip');
+                    dd.classList.toggle('open');
+                    chip.classList.toggle('open');
+                    if (dd.classList.contains('open')) renderDropdownList();
+                },
+                showCreateForm() {
+                    document.getElementById('psCreateForm').style.display = 'block';
+                    pendingEmoji = '👤';
+                    renderEmojiPicker();
+                    setTimeout(() => document.getElementById('psNewName')?.focus(), 50);
+                },
+                hideCreateForm() {
+                    document.getElementById('psCreateForm').style.display = 'none';
+                },
+                pickEmoji(e) {
+                    pendingEmoji = e;
+                    renderEmojiPicker();
+                },
+                createProfile() {
+                    const name = document.getElementById('psNewName').value.trim();
+                    if (!name) { alert('Ingresá un nombre.'); return; }
+                    const id = window.Profiles.create({ name, emoji: pendingEmoji });
+                    window.Profiles.setCurrent(id);
+                    this.closeSelector();
+                    location.reload();
+                }
+            };
+        })();
+
+        // Auto-inicializar perfiles ANTES que App.init()
+        (function initProfiles() {
+            // Si NO hay perfiles, crear automáticamente uno "Default" para no romper
+            // (los datos viejos quedan accesibles bajo LEGACY_USER_KEY)
+            if (window.Profiles.getAll().length === 0) {
+                // No crear automáticamente — dejar que el usuario elija
+                // Mostrar overlay al cargar el DOM
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => window.ProfileUI.init());
+            } else {
+                window.ProfileUI.init();
+            }
         })();
 
         /* ═══════════════ RELOJ EN VIVO ═══════════════ */
