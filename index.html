@@ -5190,6 +5190,17 @@
             currentUserKey() {
                 const p = this.getCurrent();
                 return p ? `profile-${p.id}` : LEGACY_USER_KEY;
+            },
+            // ════ Helper para preferencias UI aisladas por perfil ════
+            // Uso: Profiles.prefs.get('theme'), Profiles.prefs.set('color', '#fff')
+            prefs: {
+                _key(k) {
+                    const p = window.Profiles.getCurrent();
+                    return p ? `pref_${p.id}_${k}` : `pref_global_${k}`;
+                },
+                get(k) { return localStorage.getItem(this._key(k)); },
+                set(k, v) { localStorage.setItem(this._key(k), v); },
+                remove(k) { localStorage.removeItem(this._key(k)); }
             }
         };
 
@@ -6016,7 +6027,7 @@
             toggleTheme() {
                 this.theme = this.theme === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', this.theme);
-                localStorage.setItem('theme', this.theme);
+                Profiles.prefs.set('theme', this.theme);
 
                 const icon = this.theme === 'dark' ? 'moon' : 'sun';
                 document.querySelector('#themeToggle i').setAttribute('data-lucide', icon);
@@ -6046,7 +6057,7 @@
                     `<div class="cp-swatch" data-color="${c.hex}" title="${c.name}" style="background:${c.hex};color:${c.hex};"></div>`
                 ).join('');
 
-                const saved = localStorage.getItem('accentColor') || '#4dd0ff';
+                const saved = Profiles.prefs.get('accentColor') || '#4dd0ff';
                 this.applyAccentColor(saved);
                 if (customEl) customEl.value = saved;
                 this.markSelectedSwatch(saved);
@@ -6064,7 +6075,7 @@
                     sw.addEventListener('click', () => {
                         const c = sw.dataset.color;
                         this.applyAccentColor(c);
-                        localStorage.setItem('accentColor', c);
+                        Profiles.prefs.set('accentColor', c);
                         if (customEl) customEl.value = c;
                         this.markSelectedSwatch(c);
                     });
@@ -6072,13 +6083,13 @@
                 customEl?.addEventListener('input', (e) => {
                     const c = e.target.value;
                     this.applyAccentColor(c);
-                    localStorage.setItem('accentColor', c);
+                    Profiles.prefs.set('accentColor', c);
                     this.markSelectedSwatch(c);
                 });
                 resetEl?.addEventListener('click', () => {
                     const c = '#4dd0ff';
                     this.applyAccentColor(c);
-                    localStorage.setItem('accentColor', c);
+                    Profiles.prefs.set('accentColor', c);
                     if (customEl) customEl.value = c;
                     this.markSelectedSwatch(c);
                 });
@@ -6157,7 +6168,7 @@
             },
 
             loadTheme() {
-                const saved = localStorage.getItem('theme');
+                const saved = Profiles.prefs.get('theme');
                 if (saved) {
                     this.theme = saved;
                     document.documentElement.setAttribute('data-theme', this.theme);
@@ -11146,10 +11157,10 @@
                 if (!wrap || !handle || !notesPane) return;
 
                 // Restaurar tamaño guardado
-                const savedWidth = localStorage.getItem('notesPaneWidthPct');
+                const savedWidth = (window.Profiles?.prefs?.get('notesPaneWidthPct'));
                 if (savedWidth) notesPane.style.width = savedWidth + '%';
                 // Restaurar swap
-                if (localStorage.getItem('notesSwapped') === '1') wrap.classList.add('swapped');
+                if ((window.Profiles?.prefs?.get('notesSwapped')) === '1') wrap.classList.add('swapped');
 
                 let dragging = false;
                 handle.addEventListener('mousedown', e => {
@@ -11169,7 +11180,7 @@
                     }
                     if (pct >= 22 && pct <= 78) {
                         notesPane.style.width = pct.toFixed(2) + '%';
-                        localStorage.setItem('notesPaneWidthPct', pct.toFixed(2));
+                        if (window.Profiles?.prefs) Profiles.prefs.set('notesPaneWidthPct', pct.toFixed(2));
                     }
                 });
                 document.addEventListener('mouseup', () => {
@@ -11182,14 +11193,14 @@
                 // Swap button
                 document.getElementById('notesSwapBtn')?.addEventListener('click', () => {
                     wrap.classList.toggle('swapped');
-                    localStorage.setItem('notesSwapped', wrap.classList.contains('swapped') ? '1' : '0');
+                    if (window.Profiles?.prefs) Profiles.prefs.set('notesSwapped', wrap.classList.contains('swapped') ? '1' : '0');
                 });
                 // Reset
                 document.getElementById('notesResetBtn')?.addEventListener('click', () => {
                     notesPane.style.width = '50%';
                     wrap.classList.remove('swapped');
-                    localStorage.removeItem('notesPaneWidthPct');
-                    localStorage.removeItem('notesSwapped');
+                    if (window.Profiles?.prefs) Profiles.prefs.remove('notesPaneWidthPct');
+                    if (window.Profiles?.prefs) Profiles.prefs.remove('notesSwapped');
                 });
                 // ESC para cerrar viewer
                 document.addEventListener('keydown', e => {
@@ -11794,7 +11805,7 @@
                 mascot._dragSetup = true;
 
                 // Restaurar posición guardada
-                const savedTop = localStorage.getItem('mascotTopPct');
+                const savedTop = (window.Profiles?.prefs?.get('mascotTopPct'));
                 if (savedTop !== null) {
                     const pct = parseFloat(savedTop);
                     if (!isNaN(pct) && pct >= 5 && pct <= 95) {
@@ -11857,7 +11868,7 @@
                         const rect = mascot.getBoundingClientRect();
                         const center = rect.top + rect.height / 2;
                         const pct = (center / window.innerHeight) * 100;
-                        localStorage.setItem('mascotTopPct', pct.toFixed(2));
+                        if (window.Profiles?.prefs) Profiles.prefs.set('mascotTopPct', pct.toFixed(2));
                         // Cancelar el click que viene después del drag
                         const cancelClick = (ev) => {
                             ev.stopPropagation();
@@ -12060,7 +12071,7 @@
 
         /* ═══════════════ SIDEBAR REORDER (drag to reorder) ═══════════════ */
         (function() {
-            const STORAGE_KEY  = 'sidebarNavOrder_v2';
+            const STORAGE_KEY  = 'sidebarNavOrder_v2'; // sub-key dentro de Profiles.prefs
             const FIXED_LAST   = ['settings']; // Settings SIEMPRE último, no se reordena
             const EXCLUDED     = new Set(FIXED_LAST);
 
@@ -12069,7 +12080,7 @@
 
             // Aplicar orden guardado solo a las pestañas principales (antes del primer divider)
             function applyOrder() {
-                const saved = localStorage.getItem(STORAGE_KEY);
+                const saved = (window.Profiles?.prefs?.get(STORAGE_KEY));
                 if (!saved) return;
                 let order;
                 try { order = JSON.parse(saved); } catch(e) { return; }
@@ -12155,13 +12166,13 @@
                 const container = document.getElementById('sidebarOrderList');
                 if (!container) return;
                 const order = Array.from(container.children).map(el => el.dataset.section);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+                if (window.Profiles?.prefs) Profiles.prefs.set(STORAGE_KEY, JSON.stringify(order));
                 applyOrder();
             }
 
             window.resetSidebarOrder = function() {
                 if (!confirm('¿Restablecer el orden original del menú?')) return;
-                localStorage.removeItem(STORAGE_KEY);
+                if (window.Profiles?.prefs) Profiles.prefs.remove(STORAGE_KEY);
                 localStorage.removeItem('sidebarNavOrder');
                 location.reload();
             };
@@ -12186,7 +12197,7 @@
                 { name: 'Verde',    hex: '#22c55e' },
             ];
             const DEFAULT_COLOR = '#4dd0ff';
-            let currentColor = localStorage.getItem('accentColor') || DEFAULT_COLOR;
+            let currentColor = (window.Profiles?.prefs?.get('accentColor')) || DEFAULT_COLOR;
             let pendingColor = currentColor;
 
             function hexToRgb(h) {
@@ -12306,7 +12317,7 @@
 
             window.acceptAccentColor = function () {
                 currentColor = pendingColor;
-                localStorage.setItem('accentColor', currentColor);
+                if (window.Profiles?.prefs) Profiles.prefs.set('accentColor', currentColor);
                 applyColor(currentColor);
                 const panel = document.getElementById('colorPickerPanel');
                 if (panel) panel.classList.remove('active');
@@ -12352,7 +12363,7 @@
                 const cols = getCols();
                 if (!cols.left || !cols.right) return;
                 let layout;
-                try { layout = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) { layout = null; }
+                try { layout = JSON.parse((window.Profiles?.prefs?.get(STORAGE_KEY)) || 'null'); } catch(e) { layout = null; }
                 if (!layout || !layout.left || !layout.right) return;
 
                 const allWidgets = Array.from(document.querySelectorAll('.widgets-col .widget'));
@@ -12373,7 +12384,7 @@
                     left:  Array.from(cols.left.querySelectorAll(':scope > .widget')).map(w => w.dataset.widgetId),
                     right: Array.from(cols.right.querySelectorAll(':scope > .widget')).map(w => w.dataset.widgetId),
                 };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
+                if (window.Profiles?.prefs) Profiles.prefs.set(STORAGE_KEY, JSON.stringify(layout));
             }
 
             function initSortable() {
@@ -12398,7 +12409,7 @@
                 if (!btn || btn.dataset.bound) return;
                 btn.dataset.bound = '1';
                 btn.addEventListener('click', () => {
-                    localStorage.removeItem(STORAGE_KEY);
+                    if (window.Profiles?.prefs) Profiles.prefs.remove(STORAGE_KEY);
                     location.reload();
                 });
             }
